@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weather App</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:linear-gradient(135deg,#4facfe,#00f2fe);
+transition:.4s;
+}
+
+.container{
+width:400px;
+}
+
+.card{
+background:white;
+padding:30px;
+border-radius:20px;
+text-align:center;
+box-shadow:0 10px 25px rgba(0,0,0,.2);
+transition:.4s;
+}
+
+h1{
+margin-bottom:25px;
+color:#333;
+}
+
+input{
+width:100%;
+padding:14px;
+border-radius:10px;
+border:1px solid #ccc;
+font-size:18px;
+margin-bottom:15px;
+}
+
+button{
+width:100%;
+padding:14px;
+border:none;
+border-radius:10px;
+font-size:18px;
+cursor:pointer;
+background:#0077ff;
+color:white;
+margin-top:10px;
+}
+
+button:hover{
+background:#005fd1;
+}
+
+#themeBtn{
+background:#222;
+margin-bottom:20px;
+}
+
+.weather{
+margin-top:25px;
+display:none;
+}
+
+.weather img{
+width:100px;
+}
+
+.weather h2{
+margin-bottom:15px;
+}
+
+.weather p{
+margin:10px 0;
+font-size:18px;
+}
+
+.error{
+margin-top:20px;
+color:red;
+font-weight:bold;
+}
+
+.dark{
+background:#1c2331;
+}
+
+.dark .card{
+background:#2f3b52;
+color:white;
+}
+
+.dark h1{
+color:white;
+}
+
+.dark input{
+background:#45506d;
+color:white;
+border:none;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<button id="themeBtn">🌙 Dark Mode</button>
+
+<div class="card">
+
+<h1>🌤 Weather App</h1>
+
+<input
+type="text"
+id="city"
+placeholder="Enter City Name">
+
+<button onclick="getWeather()">
+Get Weather
+</button>
+
+<div class="weather" id="weather">
+
+<h2 id="cityName"></h2>
+
+<img id="icon">
+
+<p id="temp"></p>
+
+<p id="feels"></p>
+
+<p id="humidity"></p>
+
+<p id="wind"></p>
+
+<p id="condition"></p>
+
+</div>
+
+<p class="error" id="error"></p>
+
+</div>
+
+</div>
+
+<script>
+
+const apiKey="68cbb6c111b9210d02548c13a4ef200b";
+
+async function getWeather(){
+
+const city=document.getElementById("city").value.trim();
+
+const weather=document.getElementById("weather");
+
+const error=document.getElementById("error");
+
+weather.style.display="none";
+
+error.innerHTML="";
+
+if(city===""){
+error.innerHTML="Please enter a city.";
+return;
+}
+
+try{
+
+const response=await fetch(
+`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`
+);
+
+const data=await response.json();
+
+if(data.cod!=200){
+throw new Error(data.message);
+}
+
+document.getElementById("cityName").innerHTML=data.name;
+
+document.getElementById("temp").innerHTML=
+"🌡 Temperature : "+data.main.temp+" °C";
+
+document.getElementById("feels").innerHTML=
+"🥵 Feels Like : "+data.main.feels_like+" °C";
+
+document.getElementById("humidity").innerHTML=
+"💧 Humidity : "+data.main.humidity+" %";
+
+document.getElementById("wind").innerHTML=
+"💨 Wind Speed : "+data.wind.speed+" m/s";
+
+document.getElementById("condition").innerHTML=
+"☁ Condition : "+data.weather[0].main;
+
+document.getElementById("icon").src=
+"https://openweathermap.org/img/wn/"+data.weather[0].icon+"@2x.png";
+
+weather.style.display="block";
+
+}
+catch(e){
+
+error.innerHTML=e.message;
+
+}
+
+}
+
+const themeBtn=document.getElementById("themeBtn");
+
+themeBtn.onclick=function(){
+
+document.body.classList.toggle("dark");
+
+if(document.body.classList.contains("dark")){
+
+themeBtn.innerHTML="☀ Light Mode";
+
+}
+else{
+
+themeBtn.innerHTML="🌙 Dark Mode";
+
+}
+
+};
+
+</script>
+
+</body>
+</html>
